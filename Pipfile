@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 aws-lambda-powertools = {extras = ["all"], version = "*"}
 pydantic = {extras = ["email"], version = "==1.10.15"}
+requests = "*"
 
 [dev-packages]
 pytest = "*"
