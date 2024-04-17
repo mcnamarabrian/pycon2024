@@ -3,18 +3,82 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
     Pycon US 2024 supporting code
 
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 5
+    MemorySize: 256
+    Tracing: Active
+
 Resources:
+  VanillaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${VanillaFunction}"
+      RetentionInDays: 14
+      Tags:
+        - Key: application
+          Value: pycon2024
+        - Key: function
+          Value: vanilla-log-group
+
   VanillaFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Runtime: python3.12
-      Handler: vanilla.handler
-      CodeUri: ./function/
-      Timeout: 30
-      MemorySize: 256
       Description: Sample Lambda function without instrumentation - pycon us 2024
+      CodeUri: ./function/vanilla/
+      Handler: vanilla.handler
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - xray:PutTraceSegments
+                - xray:PutTelemetryRecords
+                - xray:GetSamplingRules
+                - xray:GetSamplingTargets
+                - xray:GetSamplingStatisticsSummaries
+              Resource: '*'
+
+  InstrumentedLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${InstrumentedFunction}"
+      RetentionInDays: 14
+      Tags:
+        - Key: application
+          Value: pycon2024
+        - Key: function
+          Value: instrumented-log-group
+
+  InstrumentedFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Sample Lambda function with instrumentation - pycon us 2024
+      CodeUri: ./function/instrumented/
+      Handler: instrumented.handler
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - xray:PutTraceSegments
+                - xray:PutTelemetryRecords
+                - xray:GetSamplingRules
+                - xray:GetSamplingTargets
+                - xray:GetSamplingStatisticsSummaries
+              Resource: '*'
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: user-registration
+          POWERTOOLS_LOG_LEVEL: INFO
+          POWERTOOLS_METRICS_NAMESPACE: Pycon2024
 
 Outputs:
   VanillaFunctionArn:
     Description: ARN used for CLI testing
     Value: !Ref VanillaFunction
+
+  InstrumentedFunction:
+    Description: ARN used for CLI testing
+    Value: !Ref InstrumentedFunction
