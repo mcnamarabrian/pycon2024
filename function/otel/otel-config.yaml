@@ -1,0 +1,24 @@
+# otel-collector-config.yaml
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+
+exporters:
+  otlp:
+    endpoint: ${env:HONEYCOMB_ENDPOINT}
+    headers:
+      "x-honeycomb-team": ${env:HONEYCOMB_API_KEY}
+
+service:
+  extensions: []
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: []
+      exporters: [otlp]

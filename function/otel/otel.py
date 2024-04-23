@@ -2,23 +2,20 @@ import http
 import os
 import sys
 
-from aws_lambda_powertools import Logger, Metrics, Tracer
+from aws_lambda_powertools import Logger, Metrics
 from aws_lambda_powertools.metrics import MetricUnit
 from aws_lambda_powertools.utilities.parser import event_parser, BaseModel
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from pydantic import EmailStr
 import requests
 
-MODULES = [
-    "requests"
-]
 
 logger = Logger()
 metrics = Metrics(
-    namespace=os.getenv('POWERTOOLS_METRICS_NAMESPACE'),
-    service=os.getenv('POWERTOOLS_SERVICE_NAME')
+    namespace=os.getenv("POWERTOOLS_METRICS_NAMESPACE"),
+    service=os.getenv("POWERTOOLS_SERVICE_NAME")
 )
-tracer = Tracer(patch_modules=MODULES)
+
 
 class User(BaseModel):
     user_id: str
@@ -27,12 +24,8 @@ class User(BaseModel):
     email:  EmailStr
 
 
-@tracer.capture_method
 def submit_user(endpoint: str, payload: dict, context: LambdaContext) -> dict:
     response = {}
-    tracer.put_annotation(key='user_id', value=payload.user_id)
-    tracer.put_metadata(key='log', value=f'{context.log_group_name}/{context.log_stream_name}')
-    tracer.put_metadata(key='request_id', value=f'{context.aws_request_id}')
     try:
         # Imagine if this was a POST to a new user API
         # and we wanted to capture when submissions to the submit_user endpoint
@@ -49,7 +42,6 @@ def submit_user(endpoint: str, payload: dict, context: LambdaContext) -> dict:
 
 @metrics.log_metrics
 @logger.inject_lambda_context
-@tracer.capture_lambda_handler
 @event_parser(model=User)
 def handler(event: User, context: LambdaContext) -> dict:
     user_id = event.user_id
