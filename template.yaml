@@ -3,9 +3,46 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
     Pycon US 2024 supporting code
 
+Parameters:
+  AwsKmsArn:
+    Description: Enter the ARN of the key used to encrypt the Honeycomb API secret
+    Type: String
+  HoneycombSecretsArn:
+    Description: Enter the ARN where the Honeycomb secrets are stored
+    Type: String
+  AwsRegion:
+    Description: Enter the region to deploy the CloudFormation stack
+    Type: String
+    Default: us-east-1
+    AllowedValues:
+      - us-east-1
+      - us-east-2
+      - us-west-2
+      - eu-west-1
+      - eu-west-2
+
+Mappings:
+  RegionMap:
+    us-east-1:
+      OtelLayerArn: arn:aws:lambda:us-east-1:901920570463:layer:aws-otel-python-amd64-ver-1-21-0:1
+      HoneycombEndpoint: api.honeycomb.io:443
+    us-east-2:
+      OtelLayerArn: arn:aws:lambda:us-east-2:901920570463:layer:aws-otel-python-amd64-ver-1-21-0:1
+      HoneycombEndpoint: api.honeycomb.io:443
+    us-west-2:
+      OtelLayerArn: arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-21-0:1
+      HoneycombEndpoint: api.honeycomb.io:443
+    eu-west-1:
+      OtelLayerArn: arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-python-amd64-ver-1-21-0:1
+      HoneycombEndpoint: api.eu1.honeycomb.io:443
+    eu-west-2:
+      OtelLayerArn: arn:aws:lambda:eu-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-21-0:1
+      HoneycombEndpoint: api.eu1.honeycomb.io:443
+
+
 Globals:
   Function:
-    Runtime: python3.12
+    Runtime: python3.11
     Timeout: 5
     MemorySize: 256
     Tracing: Active
@@ -17,8 +54,6 @@ Resources:
       LogGroupName: !Sub "/aws/lambda/${VanillaFunction}"
       RetentionInDays: 14
       Tags:
-        - Key: application
-          Value: pycon2024
         - Key: function
           Value: vanilla-log-group
 
@@ -39,15 +74,13 @@ Resources:
                 - xray:GetSamplingTargets
                 - xray:GetSamplingStatisticsSummaries
               Resource: '*'
-
+  
   InstrumentedLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub "/aws/lambda/${InstrumentedFunction}"
       RetentionInDays: 14
       Tags:
-        - Key: application
-          Value: pycon2024
         - Key: function
           Value: instrumented-log-group
 
@@ -70,9 +103,45 @@ Resources:
               Resource: '*'
       Environment:
         Variables:
-          POWERTOOLS_SERVICE_NAME: user-registration
+          POWERTOOLS_SERVICE_NAME: instrumented-user-registration
           POWERTOOLS_LOG_LEVEL: INFO
           POWERTOOLS_METRICS_NAMESPACE: Pycon2024
+
+  OtelLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${OtelFunction}"
+      RetentionInDays: 14
+      Tags:
+        - Key: function
+          Value: otel-log-group
+
+  OtelFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Sample Lambda function with OTEL instrumentation - pycon us 2024
+      CodeUri: ./function/otel/
+      Handler: otel.handler
+      Tracing: PassThrough
+      MemorySize: 1024
+      Layers:
+        - !FindInMap [RegionMap, !Ref AwsRegion, OtelLayerArn]
+      Policies:
+        - KMSDecryptPolicy:
+            KeyId: !Ref AwsKmsArn
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Ref HoneycombSecretsArn
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: otel-user-registration
+          POWERTOOLS_LOG_LEVEL: INFO
+          POWERTOOLS_METRICS_NAMESPACE: Pycon2024
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/otel-instrument
+          OPENTELEMETRY_COLLECTOR_CONFIG_FILE: /var/task/otel-config.yaml
+          OTEL_PROPAGATORS: tracecontext
+          OTEL_SERVICE_NAME: otel-user-registration
+          HONEYCOMB_API_KEY: "{{resolve:secretsmanager:pycon2024/honeycomb:SecretString:api_key}}"
+          HONEYCOMB_ENDPOINT: !FindInMap [RegionMap, !Ref "AWS::Region", HoneycombEndpoint]
 
 Outputs:
   VanillaFunctionArn:
@@ -82,3 +151,7 @@ Outputs:
   InstrumentedFunction:
     Description: ARN used for CLI testing
     Value: !Ref InstrumentedFunction
+
+  OtelFunction:
+    Description: ARN used for CLI testing
+    Value: !Ref OtelFunction
