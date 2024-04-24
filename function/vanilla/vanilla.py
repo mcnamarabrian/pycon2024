@@ -36,7 +36,7 @@ def handler(event: User, context: LambdaContext) -> dict:
     
     response = submit_user('https://us.pycon.org/2024/', event, context)
     
-    if response["status_code"] and response["status_code"] == 200:
+    if response.get("status_code") and response.get("status_code") == int(http.HTTPStatus.OK):
         print(f"[Success] Added user {first_name} {last_name} ({user_id}): {response['status_code']}")
         return {
             "status_code": http.HTTPStatus.OK,
