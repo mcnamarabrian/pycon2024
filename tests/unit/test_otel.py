@@ -1,4 +1,5 @@
 import function.instrumented.instrumented as instrumented
+import http
 
 import pydantic
 import pytest
@@ -6,7 +7,7 @@ import pytest
 def test_valid_user(valid_input, lambda_context):
     ret = instrumented.handler(valid_input, lambda_context)
     expected = {
-        "status_code": 200,
+        "status_code": int(http.HTTPStatus.OK),
         "user_id": "brian1",
         "first_name": "Brian",
         "last_name": "McNamara",

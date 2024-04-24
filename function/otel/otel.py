@@ -50,7 +50,7 @@ def handler(event: User, context: LambdaContext) -> dict:
     email = event.email
 
     response = submit_user('https://us.pycon.org/2024/', event, context)
-    if response["status_code"] and response["status_code"] == 200:
+    if response.get("status_code") and response.get("status_code") == int(http.HTTPStatus.OK):
         logger.info({
             "detail": "submit_user successful",
             "user_id": user_id,
