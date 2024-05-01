@@ -116,4 +116,6 @@ Traces give you insight into what is happening outside the boundary of your func
 
 ## What's Next?
 
-Now that we've reviewed how to emit structured log data and its importance when querying, let's examine [**metrics**](./README-METRICS.md) in AWS Lambda functions.
+Up to this point we've focused our Lambda observability discussion in the context of AWS-provided services like [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) and [AWS X-Ray](https://aws.amazon.com/xray/).
+
+In the next section, we're going to look at how we can use [OpenTelemetry (OTEL)](./README-OTEL.md) to observe our Lambda application.
