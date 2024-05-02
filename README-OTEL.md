@@ -89,7 +89,7 @@ Our code has not been instrumented with the Python OTEL SDK so how did the trace
 
 _The [AWS Distro for OpenTelemetry Lambda (ADOT)](https://aws-otel.github.io/docs/getting-started/lambda) layer!_
 
-There are a few addition items to consider but the capability to use zero-code instrumentation begins with the capabilities baked into the layer. The layer includes both OpenTelemetry SDK and the ADOT Collector components. Configuration values for the collector are defined both as [environment variables in the template.yaml](./template.yaml#L139) file and the [otel-config.yaml](./function/otel/otel-config.yaml) files. In our example, we are storing the Honeycomb API Key and Honeycomb API endpoint as environment variables stored in [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/).
+There are a few addition items to consider but the capability to use zero-code instrumentation begins with the capabilities baked into the layer. The layer includes both OpenTelemetry SDK and the ADOT Collector components. Configuration values for the collector are defined both as [environment variables in the template.yaml](./template.yaml#L139) file and the [otel-config.yaml](./function/otel/otel-config.yaml) files. In our example, the `HONEYCOMB_API_KEY` is stored in [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/). **Our secret material is never hard-coded into our application.**
 
 We could take our OTEL instrumentation a bit further by adding metrics and detailed traces; as of May 2024 the logging signal is not yet supported in the [Python SDK](https://opentelemetry.io/docs/languages/python/).
 

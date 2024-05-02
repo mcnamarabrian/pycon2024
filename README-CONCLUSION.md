@@ -1,6 +1,6 @@
 # Conclusion
 
-Observability signals like logs, metrics, and traces are what allows us as developers and operators to understand the behavior of our applications. The need to observe serverless functions is no different than other applications. For better or worse, not having access to the execution environment forces a degree of rigor. Though initially painful, it's ultimately a good thing.
+Observability signals like logs, metrics, and traces are what allows us as developers and operators to understand the behavior of our applications. The need to observe serverless functions is no different than other applications. For better or worse, not having access to the execution environment forces a degree of rigor. Ultimately, this rigor will make you a better developer and operator who better understands serverless applications.
 
 ## Advice
 
