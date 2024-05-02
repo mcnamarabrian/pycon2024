@@ -15,8 +15,8 @@ MODULES = [
 
 logger = Logger()
 metrics = Metrics(
-    namespace=os.getenv('POWERTOOLS_METRICS_NAMESPACE'),
-    service=os.getenv('POWERTOOLS_SERVICE_NAME')
+    namespace=os.getenv("POWERTOOLS_METRICS_NAMESPACE"),
+    service=os.getenv("POWERTOOLS_SERVICE_NAME")
 )
 tracer = Tracer(patch_modules=MODULES)
 
