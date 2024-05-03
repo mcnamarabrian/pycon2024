@@ -101,4 +101,4 @@ You should feel comfortable with using OTEL if you or your organization are embr
 
 ## What's Next?
 
-We've covered a _lot_ of ground. We'll summarize the important points and share resources that may help you on your quest for optimal AWS Lambda observability.
+We've covered a _lot_ of ground. We'll [summarize the important points and share resources](./README-CONCLUSION.md) that may help you on your quest for optimal AWS Lambda observability.
