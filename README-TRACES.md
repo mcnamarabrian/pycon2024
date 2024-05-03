@@ -45,7 +45,7 @@ Keep in mind the code itself has not been annotated. This is the out-of-the-box 
 
 ### What's Not Great About the VanillaFunction Logs?
 
-This is the out-of-the-box experience when using AWS X-Ray with AWS Lambda functions. We have a sense of the AWS services our Lambda function interacts with. We get a However, we don't have a lot of visibility into what is actually happening inside of our functions, or whether there are any non-AWS services that interact with our Lambda function.
+This is the out-of-the-box experience when using AWS X-Ray with AWS Lambda functions. We have a sense of the AWS services our Lambda function interacts with. However, we don't have a lot of visibility into what is actually happening inside of our functions, or whether there are any non-AWS services that interact with our Lambda function.
 
 Fortunately, we can improve upon this experience.
 
