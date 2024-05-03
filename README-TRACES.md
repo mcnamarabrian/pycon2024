@@ -4,7 +4,7 @@ The final observability signal we're going to examine is distributed tracing. Tr
 
 AWS Lambda has very tight integration with [AWS X-Ray](https://aws.amazon.com/xray). AWS assumes the operational burden of running a daemon to catpure trace information on your behalf. Several AWS services, including AWS Lambda, can create new traces, allowing downstream resources to add additional data (ie spans). This capability allows X-Ray to present an end-to-end view of components involved in applications.
 
-**NOTE:** Your function's execution role must have sufficient IAM permissions to send data to X-Ray. There is a default policy (AWSXRayDaemonWriteAccess](https://console.aws.amazon.com/iam/home#/policies/arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess)) that can be used. Alternately, you can write a policy like the one we have in our application for each function. (eg [VanillaFunction X-Ray policy](./template.yaml#L67)).
+**NOTE:** Your function's execution role must have sufficient IAM permissions to send data to X-Ray. There is a default policy [AWSXRayDaemonWriteAccess](https://console.aws.amazon.com/iam/home#/policies/arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess) that can be used. Alternately, you can write a policy like the one we have in our application for each function. (eg [VanillaFunction X-Ray policy](./template.yaml#L67)).
 
 ## Traces - Vanilla Edition
 
