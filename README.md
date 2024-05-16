@@ -26,7 +26,7 @@ The simple function will receive an event payload that interacts with a simulate
 
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
-* [Python3.12](https://www.python.org/downloads/)
+* [Python3.11](https://www.python.org/downloads/)
 
 * [Pipenv](https://pipenv.pypa.io/en/latest/)
 
